@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Workoutpal landing page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Favorite Workouts</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto"></ul>
+                <span class="navbar-text">
+                    Welcome, {{request.session.greeting}}!</a> <a href="/logout" role="button"
+                        class="btn btn-sm btn-info ml-2 text-white">Logout</a>
+                </span>
+            </div>
+        </div>
+    </nav><!-- /NAVBAR -->
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <div class="row">
+            <div class="col-6 px-2">
+                <h3>Add Workout</h3>
+                
+                <form action="/workouts/create" method="post">
+                    {% csrf_token %}
+                    {% for message in messages %}
+                        <p class="text-danger small">{{ message }}</p>
+                    {% endfor %}
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" class="form-control" name="title">
+                        
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" class="form-control" name="description">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div class="col-6 px-2">
+                <h3>Favorited Workouts</h3>
+                {% for workout in all_workouts %}
+                {% if this_user in workout.favorited_by.all %}
+                <div class="container">
+                    <h5><a href="/workouts/{{workout.id}}">{{workout.title}}</a></h5>
+                    <p>(added by {{workout.creator.first_name}} {{workout.creator.last_name}})</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+                <h3>Other Workouts</h3>
+                {% for workout in all_workouts %}
+                {% if this_user not in workout.favorited_by.all %}
+                <div class="container">
+                    <h5><a href="/workouts/{{workout.id}}">{{workout.title}}</a></h5>
+                    <p>(added by {{workout.creator.first_name}} {{workout.creator.last_name}})</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
